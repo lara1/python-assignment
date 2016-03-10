@@ -34,11 +34,21 @@ class SimpleCache(object):
         Put implementation
         """
         if self.memory.capacity <= len(self.memory.key_list) and self.disk.capacity <= len(self.disk.key_list):
-            print "No space in both disk and memory"
+            old_key = self.disk.get_oldest_key()
+            self.disk.remove_cache(old_key)
+            old_key = self.memory.get_oldest_key()
+            old_value = self.memory.cache[old_key]
+            self.memory.remove_cache(old_key)
+            self.disk.add_cache_record(old_key, old_value)
+            self.memory.add_cache_record(key, value)
         elif self.memory.capacity <= len(self.memory.key_list) and self.disk.capacity > len(self.disk.key_list):
-            print "Space only available in memory"
+            old_key = self.memory.get_oldest_key()
+            old_value = self.memory.cache[old_key]
+            self.memory.remove_cache(old_key)
+            self.disk.add_cache_record(old_key, old_value)
+            self.memory.add_cache_record(key, value)
         else:
-            print "Space available in both disk and memory"
+            self.memory.add_cache_record(key, value)
 
     def get(self, key):
         """

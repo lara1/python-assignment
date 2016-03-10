@@ -4,7 +4,7 @@ Test module for caching
 # pylint: disable=no-self-use, unused-argument
 import pytest
 
-from part2.cache import *
+from part2.cache import * # pylint: disable=wildcard-import, unused-wildcard-import
 
 @pytest.fixture(scope='function')
 def factory(request):
@@ -41,16 +41,28 @@ class TestSimpleCache(object):
     """
     Test class for Simple Cache
     """
-    def cache_get(self, factory):
+    def test_cache_put_get(self, factory):
         """
         Testing cache get feature
         """
-        cache = factory.create_cache(2, 3)
+        cache = factory.create_cache(2, 1)
         cache.put("aaa", "AAA")
-        cache.put("bbb", "BBB")
-        cache.put("ccc", "CCC")
 
-        assert cache.get("aaa") == "AAA"
+        assert cache.memory.key_list[0] == "aaa"
+        assert cache.memory.cache["aaa"] == "AAA"
+
+        cache.put("bbb", "BBB")
+        assert cache.memory.key_list[1] == "bbb"
+        assert cache.memory.cache["bbb"] == "BBB"
+
+        cache.put("ccc", "CCC")
+        assert cache.memory.key_list[0] == "bbb"
+        assert cache.disk.key_list[0] == "aaa"
+
+        cache.put("ddd", "DDD")
+        assert cache.memory.key_list[0] == "ccc"
+        assert cache.disk.key_list[0] == "bbb"
+
 
 class TestMemoryCacheProvider(object):
     """
