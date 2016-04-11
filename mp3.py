@@ -1,5 +1,6 @@
 import os
 import random
+import sys
 from subprocess import call
 """
 This script generate, concatanated MP3 files from a given folder with MP3 files.
@@ -31,12 +32,29 @@ def get_file_list(folder_path, file_list):
     return file_list
 
 if __name__ == "__main__":
-    orig_path = "" # set origianl mp3 folder path
-    generate_folder = "" # set output mp3 folder path
-    max_wrap_mb = 200 # set size of wrapped mp3 file in MB
-    sub_dir_list = os.listdir(orig_path)
-    file_counter = 0
+    try:
+        orig_path = sys.argv[1] # set origianl mp3 folder path
+        generate_folder = sys.argv[2] # set output mp3 folder path
+        max_wrap_mb = sys.argv[3] # set size of wrapped mp3 file in MB
+    IndexError:
+        print "Invlid CLI argument"
+
+
+    if not os.path.isdir(orig_path):
+        print "Original MP3 location is not valid folder"
+
+    if not os.path.isdir(generate_folder):
+        print "Generate MP3 location is not valid folder"
+
+    if max_wrap_mb == None:
+        max_wrap_mb = 200
+    else:
+        max_wrap_mb = int(max_wrap_mb)
+
+    file_counter = 1
+        
     file_list = []
+    sub_dir_list = os.listdir(orig_path)
 
     ## build song file list
 
@@ -61,7 +79,8 @@ if __name__ == "__main__":
     gen_file_number = 1
     counter = 0
     for attempt in range(2, file_counter+1):
-        rand_value = random.randint(0, file_counter-1)
+        rand_value = random.randint(0, file_counter-2)
+        print "Random "+str(rand_value)
         
         generate_file = os.path.join(generate_folder, str(gen_file_number)+"_MP3WRAP.mp3")
 
@@ -77,6 +96,7 @@ if __name__ == "__main__":
         del file_list[rand_value]
         counter = counter+1
         file_counter = file_counter-1
-
-    call(["mp3wrap", "-a", generate_file, file_list[rand_value]]) # append last file too.
+        
+    #print file_list
+    #call(["mp3wrap", "-a", generate_file, file_list[0]]) # append last file too.
     
