@@ -36,15 +36,18 @@ if __name__ == "__main__":
         orig_path = sys.argv[1] # set origianl mp3 folder path
         generate_folder = sys.argv[2] # set output mp3 folder path
         max_wrap_mb = sys.argv[3] # set size of wrapped mp3 file in MB
-    IndexError:
+    except IndexError:
         print "Invlid CLI argument"
+        sys.exit(0)
 
 
     if not os.path.isdir(orig_path):
         print "Original MP3 location is not valid folder"
+        sys.exit(0)
 
     if not os.path.isdir(generate_folder):
         print "Generate MP3 location is not valid folder"
+        sys.exit(0)
 
     if max_wrap_mb == None:
         max_wrap_mb = 200
